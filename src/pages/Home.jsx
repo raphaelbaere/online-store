@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { getCategories, getProductsFromCategoryAndQuery } from '../services/api';
+import Products from '../components/Products';
+import { getProductsFromCategoryAndQuery } from '../services/api';
 
 class Home extends Component {
   state = {
@@ -8,6 +9,7 @@ class Home extends Component {
     List: [],
     queryInput: '',
     categories: 'MLB1384',
+    resultQueryProducts: [],
   };
 
   handleOnChange = ({ target }) => {
@@ -17,12 +19,14 @@ class Home extends Component {
 
   handleQueryButton = async () => {
     const { categories, queryInput } = this.state;
-    const response2 = await getProductsFromCategoryAndQuery(categories, queryInput);
-    console.log(response2);
+    const queryProducts = await getProductsFromCategoryAndQuery(categories, queryInput);
+    const resultQueryProducts = queryProducts.results;
+    console.log(resultQueryProducts);
+    this.setState({ resultQueryProducts });
   };
 
   render() {
-    const { redirectToShoppingCart, List, queryInput } = this.state;
+    const { redirectToShoppingCart, List, queryInput, resultQueryProducts } = this.state;
     return (
       <div>
         <input
@@ -44,6 +48,14 @@ class Home extends Component {
             <h1 data-testid="home-initial-message">
               Digite algum termo de pesquisa ou escolha uma categoria.
             </h1>
+          )
+        }
+        {
+          !resultQueryProducts.length ? (
+            <p>Nenhum produto foi encontrado</p>
+          ) : (
+            resultQueryProducts
+              .map((result) => <Products key={ result.id } { ...result } />)
           )
         }
         <button
