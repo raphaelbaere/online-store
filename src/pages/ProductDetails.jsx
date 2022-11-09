@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { getProductById } from '../services/api';
+import { getProductById, handleAddToCart } from '../services/api';
 
 class ProductDetails extends Component {
   state = {
@@ -22,6 +22,8 @@ class ProductDetails extends Component {
         title,
         thumbnail,
         price,
+        id,
+
       },
     });
   }
@@ -33,7 +35,8 @@ class ProductDetails extends Component {
   };
 
   render() {
-    const { properties: { title, thumbnail, price }, hasLoaded, redirect } = this.state;
+    const { properties: { title, thumbnail, price, id },
+      hasLoaded, redirect } = this.state;
 
     return (
       <div>
@@ -46,6 +49,13 @@ class ProductDetails extends Component {
               alt={ title }
             />
             <p data-testid="product-detail-price">{ price }</p>
+            <button
+              data-testid="product-detail-add-to-cart"
+              type="button"
+              onClick={ () => handleAddToCart(title, price, id) }
+            >
+              Add to cart
+            </button>
 
           </>
         )}
