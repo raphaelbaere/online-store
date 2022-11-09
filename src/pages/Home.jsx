@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import Products from '../components/Products';
-import { getProductsFromCategoryAndQuery, getCategories } from '../services/api';
+import { getProductsFromCategoryAndQuery,
+  getCategories, getProductsFromCategory } from '../services/api';
 
 class Home extends Component {
   state = {
@@ -24,6 +25,13 @@ class Home extends Component {
     return api;
   };
 
+  onCategoryButtonClick = async (id) => {
+    this.setCategory(id);
+    const clickedCategory = await getProductsFromCategory(id);
+    const { results } = clickedCategory;
+    this.setState({ resultQueryProducts: results });
+  };
+
   setCategory = (id) => {
     this.setState({
       currentCategory: id,
@@ -34,7 +42,7 @@ class Home extends Component {
     const categories = param.map(({ name, id }) => (
       <label key={ id } htmlFor={ id } data-testid="category">
         <input
-          onClick={ () => this.setCategory(id) }
+          onClick={ () => this.onCategoryButtonClick(id) }
           name={ name }
           id={ id }
           type="radio"
