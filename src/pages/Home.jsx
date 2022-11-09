@@ -28,6 +28,7 @@ class Home extends Component {
   onCategoryButtonClick = async (id) => {
     this.setCategory(id);
     const clickedCategory = await getProductsFromCategory(id);
+    console.log(clickedCategory.results);
     const { results } = clickedCategory;
     this.setState({ resultQueryProducts: results });
   };
