@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import './App.css';
 import ShoppingCart from './pages/ShoppingCart';
 import ProductDetails from './pages/ProductDetails';
+import Checkout from './pages/Checkout';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           (props) => <ProductDetails { ...props } />
         }
       />
+      <Route path="/checkout" component={ Checkout } />
     </div>
   );
 }
