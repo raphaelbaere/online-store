@@ -1,10 +1,12 @@
 // import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import CartItem from '../components/CartItem';
 
 class ShoppingCart extends Component {
   state = {
     cartItems: [],
+    goToCheckout: false,
   };
 
   componentDidMount() {
@@ -20,8 +22,14 @@ class ShoppingCart extends Component {
     this.setState({ cartItems: currentLocalStorage });
   };
 
+  handleCheckout = () => {
+    this.setState({
+      goToCheckout: true,
+    });
+  };
+
   render() {
-    const { cartItems } = this.state;
+    const { cartItems, goToCheckout } = this.state;
     console.log(cartItems);
     return (
       <div>
@@ -39,6 +47,15 @@ class ShoppingCart extends Component {
           />
           ))
         )}
+        <button
+          type="button"
+          data-testid="checkout-products"
+          onClick={ this.handleCheckout }
+        >
+          Fechar compra
+
+        </button>
+        { goToCheckout && <Redirect to="/checkout" /> }
       </div>
     );
   }
