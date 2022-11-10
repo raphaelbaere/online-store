@@ -8,9 +8,17 @@ class ShoppingCart extends Component {
   };
 
   componentDidMount() {
+    this.refreshCartitems();
+  }
+
+  updateChild = () => {
+    this.refreshCartitems();
+  };
+
+  refreshCartitems = () => {
     const currentLocalStorage = JSON.parse(localStorage.getItem('cartItems')) || [];
     this.setState({ cartItems: currentLocalStorage });
-  }
+  };
 
   render() {
     const { cartItems } = this.state;
@@ -24,7 +32,12 @@ class ShoppingCart extends Component {
             Seu carrinho está vazio
           </p>
         ) : (
-          cartItems.map((cartItem) => <CartItem key={ cartItem.id } { ...cartItem } />)
+          cartItems.map((cartItem) => (<CartItem
+            key={ cartItem.id }
+            { ...cartItem }
+            update={ this.updateChild }
+          />
+          ))
         )}
       </div>
     );
