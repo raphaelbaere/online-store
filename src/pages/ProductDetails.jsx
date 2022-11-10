@@ -8,6 +8,10 @@ class ProductDetails extends Component {
     properties: {},
     hasLoaded: false,
     redirect: false,
+    inputEmail: '',
+    textarea: '',
+    validationForm: false,
+    note: '1',
   };
 
   async componentDidMount() {
@@ -33,10 +37,30 @@ class ProductDetails extends Component {
       redirect: true,
     });
   };
+   
+  validationButton = () => {
+    const { inputEmail, textarea } = this.state;
+
+    if (inputEmail.length > 0 && textarea.length > 0) {
+      this.setState({
+        validationForm: true,
+      });
+    }
+  }
+
+  handleInputChange = ({ target }) => {
+    const { name, value } = target;
+    this.setState({
+      [name]: value,
+    }, this.validationButton);
+    console.log(value);
+  };
+
 
   render() {
     const { properties: { title, thumbnail, price, id },
-      hasLoaded, redirect } = this.state;
+      hasLoaded, redirect, inputEmail, validationForm, textarea, note } = this.state;
+
 
     return (
       <div>
@@ -67,6 +91,51 @@ class ProductDetails extends Component {
           Ir para carrinho!
         </button>
         { redirect && <Redirect to="/shoppingCart" />}
+        <form>
+          <input type="email" name='inputEmail' value={ inputEmail } onChange={ this.handleInputChange } data-testid="product-detail-email" placeholder='Digite seu email' required />
+          <div onChange={ this.handleInputChange }>
+          <input
+            checked={ note === '1' }
+            value='1'
+            type='radio'
+            name='note'
+            data-testid="1-rating"
+          />
+          <input
+            checked={ note === '2' }
+            value='2'
+            type='radio'
+            name='note'
+            data-testid="2-rating"
+          />
+          <input
+            checked={ note === '3' }
+            value='3'
+            type='radio'
+            name='note'
+            data-testid="3-rating"
+          />
+          <input
+            checked={ note === '4' }
+            value='4'
+            type='radio'
+            name='note'
+            data-testid="4-rating"
+          />
+          <input
+            checked={ note === '5' }
+            value='5'
+            type='radio'
+            name='note'
+            data-testid="5-rating"
+          />
+          </div>
+          <textarea name='textarea' value={ textarea } onChange={ this.handleInputChange } data-testid="product-detail-evaluation" />
+          <button type='button' data-testid='submit-review-btn' disabled={ !validationForm }> Enviar</button>
+          { !validationForm && <p data-testid="error-msg"> Campos inválidos </p>
+
+          }
+        </form>
       </div>
     );
   }
