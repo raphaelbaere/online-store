@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
+import Review from '../components/Review';
 import { getProductById, handleAddToCart } from '../services/api';
 
 class ProductDetails extends Component {
@@ -8,9 +9,15 @@ class ProductDetails extends Component {
     properties: {},
     hasLoaded: false,
     redirect: false,
+    isFormValid: true,
+    inputEmail: '',
+    textarea: '',
+    note: '0',
+    reviews: [],
   };
 
   async componentDidMount() {
+    this.getReviews();
     console.log(this.props);
     const { match } = this.props;
     const { params: { id } } = match;
@@ -34,9 +41,55 @@ class ProductDetails extends Component {
     });
   };
 
+  handleInputChange = ({ target }) => {
+    const { name, value } = target;
+    this.setState({
+      [name]: value,
+    }, this.validationButton);
+  };
+
+  addReviewToLocalStorage = () => {
+    const { inputEmail, textarea, note } = this.state;
+    const { match } = this.props;
+    const { params: { id } } = match;
+
+    const currentLocalStorage = JSON.parse(localStorage.getItem(id)) || [];
+    const newReview = { inputEmail, textarea, note };
+    const newLocaStorage = [...currentLocalStorage, newReview];
+
+    localStorage.setItem(id, JSON.stringify(newLocaStorage));
+    this.setState({
+      inputEmail: '',
+      note: '0',
+      textarea: '',
+    }, this.getReviews());
+  };
+
+  isButtonValid = () => {
+    const { inputEmail, note } = this.state;
+    const isEmailValid = inputEmail.match(/[0-9a-zA-Z.'/]*@[a-z]+\.com/g);
+    return (isEmailValid && note !== '0');
+  };
+
+  handleSubmit = () => {
+    const isButtonValid = this.isButtonValid();
+    if (isButtonValid) this.addReviewToLocalStorage();
+    this.setState({
+      isFormValid: isButtonValid,
+    });
+  };
+
+  getReviews = () => {
+    const { match } = this.props;
+    const { params: { id } } = match;
+    const reviews = JSON.parse(localStorage.getItem(id)) || [];
+    this.setState({ reviews });
+  };
+
   render() {
     const { properties: { title, thumbnail, price, id },
-      hasLoaded, redirect } = this.state;
+      hasLoaded, redirect, inputEmail, isFormValid, textarea, note,
+      reviews } = this.state;
 
     return (
       <div>
@@ -67,6 +120,71 @@ class ProductDetails extends Component {
           Ir para carrinho!
         </button>
         { redirect && <Redirect to="/shoppingCart" />}
+        <form>
+          <input
+            type="email"
+            name="inputEmail"
+            value={ inputEmail }
+            onChange={ this.handleInputChange }
+            data-testid="product-detail-email"
+            placeholder="Digite seu email"
+            required
+          />
+          <div onChange={ this.handleInputChange }>
+            <input
+              checked={ note === '1' }
+              value="1"
+              type="radio"
+              name="note"
+              data-testid="1-rating"
+            />
+            <input
+              checked={ note === '2' }
+              value="2"
+              type="radio"
+              name="note"
+              data-testid="2-rating"
+            />
+            <input
+              checked={ note === '3' }
+              value="3"
+              type="radio"
+              name="note"
+              data-testid="3-rating"
+            />
+            <input
+              checked={ note === '4' }
+              value="4"
+              type="radio"
+              name="note"
+              data-testid="4-rating"
+            />
+            <input
+              checked={ note === '5' }
+              value="5"
+              type="radio"
+              name="note"
+              data-testid="5-rating"
+            />
+          </div>
+          <textarea
+            name="textarea"
+            value={ textarea }
+            onChange={ this.handleInputChange }
+            data-testid="product-detail-evaluation"
+          />
+          <button
+            type="button"
+            data-testid="submit-review-btn"
+            onClick={ this.handleSubmit }
+          >
+            Enviar
+          </button>
+          { !isFormValid && <p data-testid="error-msg"> Campos inválidos </p>}
+        </form>
+        { reviews.length && (
+          reviews.map((review) => <Review key={ review.textarea } { ...review } />)
+        )}
       </div>
     );
   }
